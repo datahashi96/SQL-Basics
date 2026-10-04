@@ -105,4 +105,21 @@ from customers as c
 full join orders as o
 on c.id = o.customer_id
 
---3.27 in video
+-- now AntiJoins, return rows from A that do not have a match w/ B\
+-- no special clause on sql for this, need to use left join then filter with where
+-- so: where right table key is NULL. CANNOT USE EQUALS SIGN AS NULL IS UNKNOWN
+-- that gives me true antijoin, as there isnt a match.
+
+select *
+from customers;
+select *
+from orders;
+
+select c.id,
+c.first_name,
+o.order_id,
+o.order_date
+from customers as c
+left join orders as o
+on c.id = o.customer_id
+where o.customer_id is NULL -- this is antijoin done correctly.
