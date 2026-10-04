@@ -123,3 +123,89 @@ from customers as c
 left join orders as o
 on c.id = o.customer_id
 where o.customer_id is NULL -- this is antijoin done correctly.
+
+-- antijoin useful as it helps with checking for/filtering for non-existence
+
+-- right antijoin, will never use but to ensure i know:
+select *
+from customers as c
+right join orders as o
+on c.id = o.customer_id
+where c.id IS NULL -- key for right antijoin is LEFT.tablekey IS NULL
+-- above query gives me all orders w/o matching customers
+
+select * 
+from orders as o
+left join customers as c
+on o.customer_id = c.id
+where c.id IS NULL -- doing same task as above but using left join for completeness
+
+-- now FULL antijoin, so basically full join with matching data removed
+select * 
+from orders as o
+full join customers as c
+on o.customer_id = c.id
+where o.customer_id IS NULL
+or c.id IS NULL --- have two conditions that we want either one. use OR clause, do not use AND!
+
+
+-- challeng q: get all customers along w/ their orders but only for customers
+-- who have placed an orders. not allowed to use inner join
+
+select * 
+from customers as c
+left join orders as o
+on c.id = o.customer_id
+where not o.customer_id is NULL -- this was my attempt. answer is below. 
+
+select * 
+from customers as c
+left join orders as o
+on c.id = o.customer_id
+where o.customer_id is not NULL -- i was close enough lol. can control what we want
+-- to see with joins. 
+
+-- Cross Joins. to combine every row from left w/ every row from right.
+-- this lets us see all combinations possible. w/ cross joins - dont care about matching data
+-- if row A has 2 rows, and B has 3 rows, then 4
+-- total rows of cross join will be multiplication = 6
+
+select *
+from customers
+cross join orders -- don't care about matching so no ON condition
+-- this generates all possible combinations of customers and orders
+
+-- Multiple Table Join
+-- select * 
+-- from a
+-- left join b on 
+-- left join c on 
+-- then to control what i want to see at the end, e.g. if i want to a different join
+-- for a particular table -- then use where clause
+
+-- q: using salesdb, retrieve a list of all orders along w/ related  customer,
+-- product, employee details
+-- for each order, display order ID, customer_name, product name, sales amount,
+-- product price and salesperson name
+
+select 
+o.orderID,
+c.firstname,
+c.lastname,
+o.sales,
+p.product,
+p.price,
+e.FirstName as Sellname
+from sales.orders as o
+left join sales.customers as c
+on o.customerID = c.customerID
+left join sales.products as p
+on o.productid = p.productid
+left join sales.employees as e
+on o.SalesPersonID = e.employeeID
+-- did above on my own without watching video
+-- would compare main table orders to 1st matching table, find name of columns than use left join
+-- keep doing that sequentially. determine what columns are keys for each left join
+-- be careful as some columns have same name, need to relabel w/ as
+-- i manually changed database at top of SSMS, Baraa instead does use clause to change database
+
