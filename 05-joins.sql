@@ -208,4 +208,7 @@ on o.SalesPersonID = e.employeeID
 -- keep doing that sequentially. determine what columns are keys for each left join
 -- be careful as some columns have same name, need to relabel w/ as
 -- i manually changed database at top of SSMS, Baraa instead does use clause to change database
-
+-- Baraa would also create new query to view different tables to see
+-- what table had information he needed.
+-- a good database typically has an identity relationship model which shows
+-- namaes of different columns in tables. so easier to do joins
