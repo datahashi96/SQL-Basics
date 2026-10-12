@@ -212,17 +212,89 @@ select creationtime,
 ' Q' + DATENAME(quarter,creationtime) +
 FORMAT(creationtime,' yyyy HH:mm:ss tt') as CustomFormat 
 from sales.orders -- Question completed
--test
 
-
-
-
-
-
-
-
+-- FORMAT clause, good use is to format date before aggregating data for report
 
 
 /*CASTING: change the data type from 1 data type to another
 	string -> integer or date --> string or string --> date
 		use CAST() or CONVERT()
+	syntax CONVERT(data_type, value, [style])
+		-data type, is date/string/int/varchar, value is column or static, and style is optional
+		-default style is 0. */
+
+select 
+convert(INT, '123') as [CONVERT:string to integer],
+convert(DATE, '2025-08-20') as [CONVERT:string to date],
+CreationTime,
+convert(DATE, creationtime) as [CONVERT:datetime to date], -- output:timeinformation removed
+convert(VARCHAR, creationtime, 32) as [convert into string in USA Standard,style 32],
+convert(VARCHAR, creationtime, 34) as [convert into string in Europestyle 34]
+from sales.orders --use Europe Style. 
+
+-- CAST(), similar function to CONVERT
+--syntax CAST(value AS datatype)
+select
+cast('123' as INT) as [string to int],
+cast(123 as VARCHAR) as [int to string],
+cast('2025-08-20' as DATE) as [string to date],
+cast('2025-08-20' as DATETIME) as [string to dateTIME],
+creationtime,
+cast(creationtime as DATE) as [creationtime to only date]
+from sales.orders
+
+/* summary CAST VS CONVERT VS FORMAT
+FORMAT: changes to only string in our desired way. use for final reports. 
+CAST: changes to any data type. cannot format data.
+CONVERT: v. similar to CAST, able to change to any data type. optional style code allow us
+to also format datetime information. /*
+
+-- DATES & Mathematic Functions, DATEADD & DATEDIFF
+--DATEADD: add or subtract  a timeinterval to/from a date
+--syntax(part, interval, date)
+--e.g. dateadd(year, 2, Orderdate): add 2 years to column OrderDate
+-- dateadd(month, -4, Orderdate): remove 4 months from column Orderdate	
+*/
+asdf asdf*/
+
+select orderID,
+orderDate,
+DATEADD(year, 2, OrderDate) as [twoyearslater],
+DATEADD(month, -3, OrderDate) as [threemonthearlier],
+DATEADD(day, -5, OrderDate) as [fivedaysearlier]
+from sales.orders
+
+--DATEDIFF: find the difference between two dates
+--specify how many years, month or days different you would like
+--syntax(part,start_date,end_date)
+
+--query: calculate age of employees
+select *,
+DATEDIFF(year, BirthDate, GETDATE()) as AGE --remember its year not years
+from sales.employees
+
+--find avg shipping duration in days for each month
+select
+DATEPART(month,OrderDate) AS [MONTH],
+AVG(DATEDIFF(day,OrderDate,ShipDate))
+from sales.orders 
+GROUP BY DATEPART(month,OrderDate)
+--FIND THE NO. of days between each order and previous order
+select OrderID,
+OrderDate as [CurrentOrderDate],
+LAG(OrderDate) over (Order by OrderDate) as [PREVIOUSORDERDATE],
+DATEDIFF(day,LAG(OrderDate) over (Order by OrderDate),OrderDate)
+from sales.orders -- lag to be covered later in window functions!
+--example above is timegap analysis
+
+--ISDATE() checks if a value is a date, output of 1 if string is a valid date
+-- checking if value is suitable enough to be a date
+select
+ISDATE('123') [DATECHECK1], -- not a date
+ISDATE('2025-08-20') [DATECHECK2], -- a date
+ISDATE('20-08-2025') [DATECHECK3], -- not considered a date, wrong format! 
+ISDATE('2024') [DATECHECK4] -- able to understand a year only as a date
+/* sql understands year/mm/dd or year only. */
+
+--use ISDATE to confirm valid dates in data, 
+--as we need to do checks before manipulating data later
