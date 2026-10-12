@@ -212,3 +212,4 @@ on o.SalesPersonID = e.employeeID
 -- what table had information he needed.
 -- a good database typically has an identity relationship model which shows
 -- namaes of different columns in tables. so easier to do joins
+--fix
