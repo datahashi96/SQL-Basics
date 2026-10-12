@@ -212,7 +212,7 @@ select creationtime,
 ' Q' + DATENAME(quarter,creationtime) +
 FORMAT(creationtime,' yyyy HH:mm:ss tt') as CustomFormat 
 from sales.orders -- Question completed
-
+-test
 
 
 
