@@ -201,4 +201,23 @@ and specify frame: ROWS BETWEEN 2 PRECDING AND CURRENT ROW)
 -- DIFFERENCE WITH ROLLING IS THE FRAME CLAUSE IS SPECIFIED!!!!!!!! */
 
 --Calculate the moving average of sales for each product over time
+--rolling total
+select OrderID,
+ProductID,
+OrderDate,
+Sales,
+AVG(Sales) OVER (PARTITION BY ProductID) as  AvgProduct,
+AVG(Sales) OVER (PARTITION BY ProductID ORDER BY OrderDate ASC) as  MovingAvg
+from sales.orders --orderby alone has hidden frame
+-- we want moving average so that matches hidden frame: preceding to current row
+
+--Calculate the moving average of sales for each product over time
+--including only the next order, SO THAT MEANS NONE PRECEDING!!!
+select OrderID,
+ProductID,
+OrderDate,
+Sales,
+AVG(Sales) OVER (PARTITION BY ProductID ORDER BY OrderDate ASC
+ROWS BETWEEN CURRENT ROW AND 1 FOLLOWING) as  MovingAvg
+from sales.orders	
  
