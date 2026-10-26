@@ -1,3 +1,3 @@
 #SQL PRACTICE PORTFOLIO
 Tracking my progress through the Data with Baraa SQL course
-Currently working on Views!
+All Techniques Learnt. Now onto SQL Projects!
