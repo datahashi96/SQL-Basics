@@ -124,4 +124,78 @@ CTE Best Practices
 Second Type of CTE: RECURSIVE CTE
 	Self-refering query that repeatedly proceses data until a specific condition
 	is met
-	15.06
+	Typically used if dealing with a hierarchy structure
+
+Recursive CTE Syntax
+
+WITH CTE_NAME AS
+(
+	SELECT ...	ANCHOR QUERY
+	FROM ...
+	WHERE ...
+
+	UNION (combine data but remove duplicates) or UNION ALL (incl duplicate)
+
+	SELECT ...	second select statement within CTE, a RECURSIVE QUERY
+	FROM ...
+	WHERE ...	define a break condition in order to break loop within CTE
+				the loop is by having second FROM clause reference itself
+					i.e. the CTE_NAME
+)
+
+SELECT FROM CTE_NAME -- standard main query */ 
+
+-- Generate a sequence of numbers from 1-20
+
+WITH Series AS
+	(
+	SELECT --Anchor query
+	1 AS MyNumber
+
+	UNION ALL
+
+	SELECT -- Recursive Query
+	MyNumber + 1
+	FROM Series
+	WHERE MyNumber < 20 --when MyNumber = 20, chain breaks
+	)
+
+--Main Query
+SELECT *
+FROM Series
+OPTION (MAXRECURSION 20) -- if wanted a sequence from 1-1000
+--SQL puts limit of 100. need to use option clause to set max recursion
+--of 1000 to successfully complete task
+
+--Show the employee hierarchy by displasying each employees level within
+--the organisation
+-- ManagerID shows how many Managers the employee has
+--EmployeeID 1 Frank is NULL and he is the boss and has no managers
+
+
+
+WITH CTE_Manager AS
+
+(SELECT --Anchor Query 
+	EmployeeID,
+	FirstName,
+	ManagerID,
+	1 AS Level
+FROM Sales.employees
+WHERE ManagerID IS NULL -- speciifying first manager
+
+UNION ALL
+
+SELECT --recursive query
+	e.EmployeeID,
+	e.FirstName,
+	e.ManagerID,
+	Level + 1
+FROM sales.employees as e 
+INNER JOIN CTE_Manager as ceh -- dont need where, as inner join filters data
+ON e.ManagerID = ceh.EmployeeID
+)
+
+SELECT *
+FROM CTE_Manager
+OPTION (MAXRECURSION 20)
